@@ -1,1 +1,383 @@
+import numpy as np
+import pandas as pd
+import csv
+import matplotlib as plt 
+from matplotlib.pyplot import figure
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+ # We start with importing modules tahat we will need
+
+1. Introduction
+
+USA = pd.read_excel(r'C:\Users\intel\Desktop\diplomski.dohodak.xlsx',sheet_name="Data_USA")
+GER = pd.read_excel(r'C:\Users\intel\Desktop\diplomski.dohodak.xlsx',sheet_name="Data_GER")
+CHN = pd.read_excel(r'C:\Users\intel\Desktop\diplomski.dohodak.xlsx',sheet_name="Data_CHN")
+
+ # USA: In this data set are information about United States of America
+ # GER: In this data set are information about Germany
+ # CHN: In this data set are information about China
+
+ # Tourism as an industrial branch of the economy is based on the need to temporarily change the place of residence of tourists, 
+ # which includes the element of travel and the element of temporary residence in another place.
+ # Temporary change of tourist stay means the arrival and gathering of tourists in certain places so that these places become "tourist destinations". 
+ # Tourist destinations are places where tourists meet their needs to change their place of residence, the need to meet new cultures, the need to explore, etc.
+ # The most important economic aspect of tourism is the consumption of tourists in the places they visit. 
+ # The spending of money by tourists has certain economic effects on the economy of the country that tourists visit. The economic effects of tourism are:
+
+ - the impact of tourism on gross domestic product and national income,
+ - impact on the country's balance of payments,
+ - impact on investment activity and investment structure,
+ - multiplier effect on the economy,
+ - impact on population employment.
+ 
+ # The subject of our research is modeling the demand for tourism in BiH (Bosnia and Herzegovina)
+ # By formulating a model of tourism demand, we will try to determine:
+ - statistically significant model of tourism demand,
+ - independent variables that explain the model,
+ - coefficients with model parameters,
+ - determine whether there are independent variables in the model that are not statistically significant.
+
+ # By defining the model of tourism demand, we want to achieve the following goals:
+ - determine the impact of independent variables on the demand for tourism in BiH,
+ -provide information to the government in order to make tourism policy decisions more efficient and effective.
+
+2. Methodology
+ 2.1. Model selection
+
+ # Modified model of tourism demand that we will model:
+ - DTij = f (Yj, RPij)
+ # The variables in the model for which we have data and which we will use for modeling are:
+ - the number of tourists from country j in BiH given in quarterly intervals,
+ - income measured as disposable income of tourists from the country of origin j (Yj),
+ - the ratio of relative prices of BiH and the country of origin of tourists j (Rpij).
+
+ # Given the data on the largest consumers in the field of tourism, the countries that I decided to include in the model of tourism demand are:
+ - United States (USA),
+ - The Republic of Germany,
+ - People's Republic of China.
+ 
+ # We decided on the United States due to its geographical distance from BiH and the fact that the United States is the most developed country, 
+ # and the country with the strongest political and cultural influence in the world.
+ 
+ # Germany was chosen because of the three selected countries, the closest to BiH in geographical distance, 
+ # and the most economically developed country on the European continent.
+
+ # We chose China because the number of tourists from this country to Bosnia and Herzegovina is increasing every year. In addition, of the selected countries, 
+ # China is the country with the largest population in the world and the second largest economy in the world.
+
+ 2.2.Identification of model variables
+
+ # The variables that we decided to evaluate the model of tourism demand in Bosnia and Herzegovina based on the theory and availability of data are variables:
+ - number of tourists
+ - income
+ - relevant prices
+ 
+ # The number of tourists in our model represents the number of tourists in our country in one quarter.
+ # The variable income in our model represents the income of tourists from the country of origin measured as the disposable personal income of the population.
+ # The relative price variable represents the ratio of the consumer price index of the visitor's country to the home country.
+
+ 2.3.Graphic representation of data
+
+figure(figsize=(8, 6), dpi=100)
+plt.plot(USA["Period"],USA["Bt.USA"],marker='o')
+plt.title('Number of tourist by quartal data USA')
+plt.xlabel('Bt.USA')
+plt.ylabel('Period')
+plt.show()
+ # Code to make line chart to represent data USA # fali slika
+
+figure(figsize=(8, 6), dpi=100)
+plt.plot(GER["Period"],GER["Bt.GER"],marker='o')
+plt.title('NUmber of tourist by quartal data GER')
+plt.xlabel('Bt.GER')
+plt.ylabel('Period')
+plt.show()
+ # Code to make line chart to represent data Germany # fali slika
+
+figure(figsize=(8, 6), dpi=100)
+plt.plot(CHN["Period"],CHN["Br.CHN"],marker='o')
+plt.title('Number of tourist by quartal data CHN')
+plt.xlabel('Bt.CHN')
+plt.ylabel('Period')
+plt.show()
+ # Code to make line chart to represent data China # fali slika
+
+3. Descriptive statistics
+ 3.1.Descriptive statistics of variables of interest
+
+ # Descriptive statistics serve us to organize, describe and analyze the collected data.
+
+print(USA.info()) 
+ # Code to gain information about data USA
+    Column   Non-Null Count  Dtype  
+---  ------   --------------  -----  
+ 0   Period   38 non-null     object 
+ 1   Bt.USA   38 non-null     int64  
+ 2   RP(USA)  38 non-null     float64
+ 3   DI(USA)  38 non-null     float64 
+ # We see that for data USA we have 38 data entries.
+
+print(USA.isnull().sum())
+Period     0
+Bt.USA     0
+RP(USA)    0
+DI(USA)    0
+ # With this code we are looking does our data have missing values. We see that for data USA we have no missing values.
+
+print(GER.info())
+ # Code to gain information about data Germany
+    Column   Non-Null Count  Dtype  
+---  ------   --------------  -----  
+ 0   Period   38 non-null     object 
+ 1   Bt.GER   38 non-null     int64  
+ 2   RP(GER)  38 non-null     float64
+ 3   DI(GER)  38 non-null     float64
+ # We see that for data Germany we have 38 data entries.
+
+print(GER.isnull().sum())
+Period     0
+Bt.GER     0
+RP(GER)    0
+DI(GER)    0
+ # With this code we are looking does our data have missing values. We see that for data Germany we have no missing values.
+
+print(CHN.info())
+ # Code to gain information about data China
+    Column   Non-Null Count  Dtype  
+---  ------   --------------  -----  
+ 0   Period   38 non-null     object 
+ 1   Br.CHN   38 non-null     int64  
+ 2   RP(CHN)  38 non-null     float64
+ 3   DI(CHN)  38 non-null     float64
+ # We see that for data Germany we have 38 data entries.
+
+print(CHN.isnull().sum())
+Period     0
+Br.CHN     0
+RP(CHN)    0
+DI(CHN)    0
+ # With this code we are looking does our data have missing values. We see that for data China we have no missing values.
+
+
+USA.describe().round(3) # Code to do data summary, also we have rounded the decimal points to 3 digits
+GER.describe().round(3) # Code to do data summary, also we have rounded the decimal points to 3 digits
+CHN.describe().round(3) # Code to do data summary, also we have rounded the decimal points to 3 digits
+
+
+	Bt.USA	   RP(USA)	DI(USA)		        Bt.GER	  RP(GER)    DI(GER)		Br.CHN	  RP(CHN)  DI(CHN)
+count	38	   38	        38	        count	38	  38	     38	       count	38	  38	   38
+mean	4112.816   0.686	11961.996	mean	6905.868  1.94	     447.776   mean	4737.316  0.244	   3968.02
+std	2804.895   0.038	1263.085	std	4403.772  0.037	     32.558    std	7397.877  0.02	   905.039
+min	1042	   0.618	9879.049	min	2342	  1.873	     395.9     min	98	  0.203	   2475.273
+25%	1991.5	   0.661	11020.757	25%	3632.5	  1.909	     423.662   25%	622	  0.239	   3259.346
+50%	3062.5	   0.683	11935.191	50%	6002.5	  1.933      444.06    50%	1750.5	  0.247	   3979.456
+75%	5100.75	   0.709	12908.066	75%	7947.5	  1.971      474.558   75%	4902.25	  0.254	   4679.711
+max	11366	   0.759	14285.796	max	20737	  2.002      508.3     max	36831	  0.282	   5487.895
+
+# To save space and for better view we have put data for USA, Germany and China in one table.
+
+4. Data analysis
+ 4.1.Choice of estimator
+
+ # By data analysis we mean the use of statistical methods and procedures on a sample for statistical inference. 
+ # For data analysis, we will use regression analysis, ie. least squares method (OLS).
+ # To use the least squares method, certain estimator assumptions must be met:
+ - linearity of model parameters,
+ - random sample,
+ - independence of the expected value of the random member,
+ - lack of perfect correlation between variables,
+ - the variance of the random member is constant (homoskedasticity),
+ - normality of a random member.
+ # If the assumptions from 1st to 4th are met, we say that the model is unbiased, and if all the assumptions are met, then OLS is the best unbiased linear estimator (BLUE).
+ # One of the tests we will do is the Durbin-Watson test to check the existence of serial autocorrelation, and in case of the existence of autocorrelation, apply the methods of removing it.
+ # Another test related to time series is the Dickey-Fuller test for checking stationarity, ie. the existence of a unit root.
+ # After the time series tests, we will do other diagnostic tests:
+ - Ramsey Reset test to check the correctness of the functional form of the model,
+ - Breush-Pagan and White test to test for homosexuality,
+ - Jarque-Bera test to examine the existence of residual normality.
+
+ 4.2.Regression analysis and model evaluation
+
+ # One of the most commonly used models of tourism demand has the form:
+           Qij = f (Yj, TCij, RPij, ERij, QFi, Tj, Aij, εij)
+ 
+ # In this paper, due to lack of data, lack of data in quarterly reports, inability to conduct research to determine the preferences of tourists, 
+ # a modified model of tourism demand with two independent variables is proposed, which takes the form:
+           DTij = f (Yj, RPij)
+ # The proposed model of tourism demand has a linear functional form in the form:
+           DT = β0 + β1Yj + β2RPij + ε
+
+ # Although the linear form of the tourism demand model is easier to use, the functional form more commonly used in research is the degree of functional form of the tourism demand model.
+ # Emirical research has shown that the degree model has better performance compared to the linear model in terms of expected coefficient signs and statistical significance of coefficients.
+ # Due to the above characteristics of the degree model of tourism demand, the theoretical model of tourism demand with the number of tourists as a dependent variable 
+ # and income and relative price as an independent variable used in the work after the transformation of the degree model is:
+          
+           log number of tourists = β0 + β1log disposable income + β2log relative prices + εij
+
+ # The obtained demand model is a log-log model, ie. constant elasticity model.
+
+ # Before we continue with anlysis we must first transform data into log form
+
+USA = USA.drop("Period",axis=1)
+USA['log_Bt.USA'] = np.log(USA['Bt.USA'])
+USA['log_RP(USA)'] = np.log(USA['RP(USA)'])
+USA['log_DI(USA)'] = np.log(USA['DI(USA)'])
+USA = USA.drop("Bt.USA",axis=1)
+USA = USA.drop("RP(USA)",axis=1)
+USA = USA.drop("DI(USA)",axis=1)
+USA.head(2)
+
+    log_Bt.USA	log_RP(USA)  log_DI(USA)
+0   9.251866	-0.346997    9.567021
+1   8.026824	-0.368342    9.556195
+ # Code we use to drop "Period" feature. Rest of the code is transformation of data into natural logaritham for data USA.
+ # In output we see that we have make the transformation
+
+GER = GER.drop("Period",axis=1)
+GER['log_Bt.GER'] = np.log(GER['Bt.GER'])
+GER['log_RP(GER)'] = np.log(GER['RP(GER)'])
+GER['log_DI(GER)'] = np.log(GER['DI(GER)'])
+GER = GER.drop("Bt.GER",axis=1)
+GER = GER.drop("RP(GER)",axis=1)
+GER = GER.drop("DI(GER)",axis=1)
+GER.head(2)
+
+   log_Bt.GER	log_RP(GER)  log_DI(GER)
+0  9.939675	0.658091     6.231072
+1  8.347590	0.648411     6.224598
+ # Same code we used to transform data of Germany
+
+CHN = CHN.drop("Period",axis=1)
+CHN['log_Br.GER'] = np.log(CHN['Br.CHN'])
+CHN['log_RP(CHN)'] = np.log(CHN['RP(CHN)'])
+CHN['log_DI(CHN)'] = np.log(CHN['DI(CHN)'])
+CHN = CHN.drop("Br.CHN",axis=1)
+CHN = CHN.drop("RP(CHN)",axis=1)
+CHN = CHN.drop("DI(CHN)",axis=1)
+CHN.head(2)
+
+   log_Br.GER  log_RP(CHN)  log_DI(CHN)
+0  10.514095   -1.355666    8.610300
+1  8.990442    -1.361265    8.596397
+ # Same code we used to transform data of China
+
+4.2.1.Examination of the existence of serial correlation
+
+ # Time series represent random variables Xt recorded at time t. One of the assumptions of the OLS estimator is the independence of the expected value of the random member. 
+ # This means that there must be no correlation between the variables included in the model and the variables that ended up in the random member of the model. 
+ # If this assumption is violated, ie. there is a correlation then there is a problem of autocorrelation in time series.
+ # The consequences of the existence of autocorrelation are:
+ - estimates of model parameters are unbiased but inefficient,
+ - the assessment of the variance of a random member is biased,
+ - R2 is not a valid indicator of regression quality,
+ - t and F test results biased and ineffective.
+ # If there is an autocorrelation, the methods we can use to correct the autocorrelation problem are:
+ - check that autocorrelations are not the result of an incorrectly specified model,
+ - apply another estimator such as the generalized least squares method,
+ - apply the Cochrane-Orcut method,
+ - apply Newey-West standard error corrections.
+ # The test based on which we check the serial autocorrelation is the Breush-Godfrey test. The Breush-Godfrey test is not limited to first-order autocorrelation testing, 
+ # which allows us to test higher-order autocorrelation, and the conclusion about accepting / rejecting hypotheses is based on the χ2 distribution.
+ # The hypotheses of the Breush-Godfrey test are formed in the following way:
+   - H0: ρ1 = ρ2 =. . . = ρp = 0 (no autocorrelation)
+   - H1: ρ ≠ 0 (there is autocorrelation)
+ # Autocorrelation tells us that event Xt is affected by an event that occurred at time Xt-k. The autocorrelation of the k-th order tells us how long it takes to go back in time. 
+ # This return to the past is called a lag (shift) of the time series.
+ # The choice of the displacement length is made on the basis of information criteria.
+ # Since this is a quarterly data and a sample of 38 data, the information criterion we will use is the Schwarz information criterion (BIC).
+ # The number of lag is calculated by repeating the model, each time with variables shifted by 1 so that we create a lag data set.
+ # We repeat the procedure until we obtain the smallest value of BIC, indicating that number of shifts we used is our lag value.
+ 
+USA
+
+Y_USA = USA["log_Bt.USA"]
+X_USA = USA.drop("log_Bt.USA",axis=1)
+ # Creating a independing variable X_USA and depending variable Y_USA
+X = sm.add_constant(X_USA)
+lin_USA = sm.OLS(Y_USA,X).fit()
+lin_USA.summary()
+ # Creating a regression model  		
+
+ # To check the autocorrelation we will do Breush-Godfrey test. In the test we will be changing 
+ # the number of lag until we gain p-value that will reject null hypotheses.
+
+print(dg.acorr_breusch_godfrey(lin_USA, nlags=2))
+ # Code to do Breush-Godfrey test with number of lag = 2
+
+χ2	  p-value    # Based on p-value we reject null hypotheses and conclude that we have
+-24.6323  0.0000045  # serial autocorrelation in our model.
+
+lin_USA_HAC= lin_USA.get_robustcov_results(cov_type='HAC',maxlags=2)
+ # With this code we will make correction of standards errors with lag 2.
+ # Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 2 lags.
+
+Germany
+
+Y_GER = GER["log_Bt.GER"]
+X_GER = GER.drop("log_Bt.GER",axis=1)
+ # Creating a independing variable X_GER and depending variable Y_GER
+X = sm.add_constant(X_GER)
+lin_GER = sm.OLS(Y_GER,X).fit()
+lin_GER.summary()
+ # Creating a regression model
+
+ # To check the autocorrelation we will do Breush-Godfrey test. In the test we will be changing 
+ # the number of lag until we gain p-value that will reject null hypotheses.
+
+print(dg.acorr_breusch_godfrey(lin_GER, nlags=4))
+ # Code to do Breush-Godfrey test with number of lag = 4
+
+χ2	 p-value   # Based on p-value we reject null hypotheses and conclude that we have
+27.6868  0.000014  # serial autocorrelation in our model.
+
+lin_GER_HAC= lin_GER.get_robustcov_results(cov_type='HAC',maxlags=4)
+ # With this code we will make correction of standards errors with lag 4.
+ # Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 4 lags.
+
+China
+
+Y_CHN = CHN["log_Br.CHN"]
+X_CHN = CHN.drop("log_Br.CHN",axis=1)
+ # Creating a independing variable X_CHN and depending variable Y_CHN
+X = sm.add_constant(X_CHN)
+lin_CHN = sm.OLS(Y_CHN,X).fit()
+lin_CHN.summary()
+ # Creating a regression model
+
+ To check the autocorrelation we will do Breush-Godfrey test. In the test we will be changing 
+ # the number of lag until we gain p-value that will reject null hypotheses.
+
+χ2	 p-value    # Based on p-value we reject null hypotheses and conclude that we have
+28.8004	 0.0000086  # # serial autocorrelation in our model.
+
+lin_CHN_HAC= lin_CHN.get_robustcov_results(cov_type='HAC',maxlags=4)
+ # With this code we will make correction of standards errors with lag 4.
+ # Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 4 lags.
+
+4.2.2. Examining the existence of a singular root
+
+ # By testing the existence of a unit root, we want to determine whether the time series is stationary.
+ # We say that a time series is stationary if the following properties apply:
+ - the mean value of Xt is constant over time E (Xt) = µ = const.
+ - the variance Xt is constant over time v (Xt) = E (Xt-µ) 2 = const.
+ - covariance is constant over time E [(Xt - μ) (Xt-p - μ)] = const.
+ # If at least one of the listed properties is not valid for time series, then we say that the time series is non-stationary.
+ # The term unit root is associated with nonstationary time series. 
+ # The unit root is a number that tells us how many times a time series needs to be differentiated to become a stationary time series.
+ # In case of non-stationarity, the methods we can use to correct the non-stationarity problem are:
+ - include trend as an independent variable in the model,
+ - differentiate data,
+ - check the existence of cointegration between time series.
+ # The application of the Dickey-Fuller test begins with the transformation of the auto regression model and the calculation of t-statistics to draw conclusions about the statistical significance of the test. 
+ # The hypothesis we test using the Dickey-Fuller test is:
+    H0: ß1 = 0
+    H1: ß1 ˂ 0
+
+
+
+
+
+
+
 
