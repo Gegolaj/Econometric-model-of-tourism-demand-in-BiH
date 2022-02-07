@@ -585,11 +585,6 @@ log_DI(USA)   0.669405	   0.21457	1
  # From correlation matrix we wee that highest value of correlation is between variables:
  # "log_Bt.USA " and "log_DI(USA)". This variables are number of tourist and disposable income.
  # The value of correlation is 0.67
- # To better represent correlacion we will do correlation heatmap.
-
-sns.heatmap(USA.corr(), annot=True)
-plt.show()
-https://user-images.githubusercontent.com/98455721/152784053-0811c278-16b4-4eab-a1d1-a445d314fb54.png
 
 USA['Intercept'] = 1
 vif = pd.DataFrame()
@@ -616,6 +611,7 @@ log_DI(GER)  0.575222     -0.748499    1.000
  # From correlation matrix we wee that highest value of correlation is between variables:
  # "log_DI(GER) " and "log_RP(GER)". This variables are disposable income and relative prices.
  # The value of correlation is -0.75.
+
 
 GER['Intercept'] = 1
 vif = pd.DataFrame()
