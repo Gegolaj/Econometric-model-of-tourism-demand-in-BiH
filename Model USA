@@ -5,6 +5,16 @@ import matplotlib as plt
 from matplotlib.pyplot import figure
 import seaborn as sns
 import matplotlib.pyplot as plt
+import math
+from sklearn.linear_model import LinearRegression
+import statsmodels.api as sm
+import statsmodels.stats.diagnostic as dg
+from statsmodels.tsa.stattools import adfuller
+import statsmodels.stats.outliers_influence as oi
+from statsmodels.stats.diagnostic import linear_reset
+import scipy.stats as stats
+from statsmodels.stats.diagnostic import het_white
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
  # We start with importing modules tahat we will need
 
@@ -373,6 +383,357 @@ lin_CHN_HAC= lin_CHN.get_robustcov_results(cov_type='HAC',maxlags=4)
  # The hypothesis we test using the Dickey-Fuller test is:
     H0: ß1 = 0
     H1: ß1 ˂ 0
+
+USA
+
+adfuller(USA["log_Bt.USA"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -1.3048 	 0.6270 
+
+adfuller(USA["log_RP(USA)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -3.3205 	 0.0140 
+
+adfuller(USA["log_DI(USA)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -0.1360 	 0.9457 
+
+ # We say that nonstationary variables are cointegrated if there is a degree in their motion that neutralizes individual nonstationarity.
+ # We will test the existence of cointegration by calculating the model residues, and then we will test the residues with the Dickey-Fuller test.
+
+resid = lin_USA_HAC.resid
+adfuller(resid,autolag="BIC") # Based on p-value we can reject null hypothesis,meaning data is stationary
+ ADF statistic	p-value
+ -3.9150 	 0.0019 
+
+Germany
+
+adfuller(GER["log_Bt.GER"],autolag="BIC") # Based on p-value we can reject null hypothesis,meaning data is stationary
+ ADF statistic	p-value
+ -6.2909 	 0.0000 
+
+adfuller(GER["log_RP(GER)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -1.1543 	 0.6929 
+
+adfuller(GER["log_DI(GER)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -0.7210 	 0.8412 
+
+ # We will test the existence of cointegration by calculating the model residues, and then we will test the residues with the Dickey-Fuller test.
+
+resid = lin_GER_HAC.resid
+adfuller(resid,autolag="BIC) # Based on p-value we can reject null hypothesis,meaning data is stationary
+ADF statistic	p-value
+ -7.247 	 0.000 
+
+China
+
+adfuller(CHN["log_Br.CHN"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -0.2083 	 0.9375 
+
+adfuller(CHN["log_RP(CHN)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ -1.1581 	 0.6913 
+
+adfuller(CHN["log_DI(CHN)"],autolag="BIC") # Based on p-value we can not reject null hypothesis,meaning data is non-stationary
+ ADF statistic	p-value
+ 1.7358 	 0.9982 
+
+ # We will test the existence of cointegration by calculating the model residues, and then we will test the residues with the Dickey-Fuller test.
+
+resid = lin_CHN_HAC.resid
+adfuller(resid,autolag="BIC) # Based on p-value we can reject null hypothesis,meaning data is stationary
+ ADF statistic	p-value
+ -6.6527 	 0.0000 
+
+4.2.3. Examination of the functional form of the model
+
+ # The Ramsey RESET (Regression Equation Specification Error Test) is a test designed to test for incorrect model specification. 
+ # Incorrect model specification can occur due to:
+ - we did not include an explanatory variable in the model,
+ - wrong choice of functional model form,
+ - inclusion of irrelevant variables in the model.
+ # To test the functional form of the model, we use the Ramsey RESET test with formed hypotheses:
+    H0: The functional form is well specified
+    H1: Functional form is not well specified
+ # In case of rejecting the null hypothesis and accepting the alternative hypothesis that the functional form is not well specified,
+ # Ramsey test only gives us an indication that the wrong functional form of the model was chosen but the test itself does not offer a solution in terms of which form is suitable for the model. 
+ # Adaptation of the functional form of the model is based on theoretical knowledge.
+
+USA
+
+linear_reset(lin_USA, power=2, test_type='fitted', use_f=False, cov_kwargs=None)
+ χ2	 p-value
+ 0.2222  0.6374 
+ # Based od p-value we can not reject null hypotheses, meaning that functional form is well specified
+
+Germany
+
+linear_reset(lin_GER, power=2, test_type='fitted', use_f=False, cov_kwargs=None)
+ χ2	 p-value
+ 0.8995  0.3429 
+ # Based od p-value we can not reject null hypotheses, meaning that functional form is well specified
+
+China
+
+linear_reset(lin_CHN, power=2, test_type='fitted', use_f=False, cov_kwargs=None)
+ χ2	 p-value
+ 0.1370  0.7113 
+ # Based od p-value we can not reject null hypotheses, meaning that functional form is well specified
+
+4.2.4. Testing the assumption of normality
+
+ # The normality of a random term is one of the fundamental assumptions that must be met in order for the least squares method to be applied. 
+ # If the assumption of normality is not satisfied, then we say that the model is not the best linear unbiased estimator, therefore it affects t and F statistics, 
+ # and thus the statistical significance of parameters and tests.
+ # The test on the basis of which we check the normality of the residue is the Jarque-Bera test. The application of the test is based on the calculation of the second, third and fourth central moment of the residual. 
+ # The statistic on which the Jarque-Bera test is based is the χ2 probability distribution with two degrees of freedom. The hypotheses that are tested using the test are:
+    H0: µ1 = µ2
+    H1: µ1 ≠ µ2
+ 
+USA
+
+stats.jarque_bera(resid)
+ χ2	 p-value
+ 2.4729  0.2904 
+ # Based on p-value we can not reject null hypotheses, meaning that residual normality assumption is satisfied
+
+Germany
+
+stats.jarque_bera(resid)
+ χ2	 p-value
+ 0.8652  0.6488 
+ # Based on p-value we can not reject null hypotheses, meaning that residual normality assumption is satisfied
+
+China
+
+stats.jarque_bera(resid)
+ χ2	 p-value
+ 2.1158  0.3472 
+ # Based on p-value we can not reject null hypotheses, meaning that residual normality assumption is satisfied.
+
+4.2.5. Testing the assumption of homoscedasticity
+
+ # The assumption of the existence of homoscedasticity is one of the basic assumptions for the application of the least squares method. 
+ # By homoscedasticity he meant that the variance of the random error is the same (constant) for all observations
+ # The reasons that can lead to the existence of heteroscedasticity are:
+ - the existence of outliers in the data,
+ - measurement errors,
+ - existence of subpopulations in the data,
+ - model specification errors (absence of an important variable, incorrect functional form, etc.).
+ # The tests most commonly used to test the homoscedasticity assumption are:
+ - Breush-Pagan test
+ - White test
+ # Given that the sample in this model consists of 38 units and that we have a model with only two explanatory variables, 
+ # we will use the White test to verify the existence of homoscedasticity of variance.
+ # Hypothesis testing hypothesis testing is formulated as follows:
+    H0: δ2 = δ2 = constant
+    H1: δ2 ≠ δ2
+ # In case of heterosexasticity, the methods we can use to correct the problem are:
+ - respecification of the initial model,
+ - transformation of initial variables,
+ - use of robust standard errors (White correction),
+ - using the method of weighted least squares.
+
+USA
+
+white_test = het_white(resid,  lin_USA_HAC.model.exog)
+ χ2	 p-value
+ 6.2298  0.2845 
+ # Based on p-value we can not reject null hypotheses, meaning that existence of homoscedasticity is satisfied.
+
+Germany
+
+white_test = het_white(resid,  lin_GER_HAC.model.exog)
+ χ2	  p-value
+ 15.8164  0.0074 
+ # Based on p-value we can reject null hypotheses, meaning that we have problem with heterosexasticity.
+ # Because we had problem with autocorrelation, we used Newey-West method (HAC) to solve for autocorrelation.
+ # HAC will also deal with heterosexasticity. The application of robust standard errors does not change the value of the coefficients of the model, 
+ # but corrects the efficiency of t statistics so that drawing conclusions about statistical significance is improved.
+
+China
+
+white_test = het_white(resid,  lin_CHN_HAC.model.exog)
+ χ2	 p-value
+ 3.8145  0.5764 
+ # Based on p-value we can not reject null hypotheses, meaning that existence of homoscedasticity is satisfied.
+
+4.2.6. Testing the existence of multicollinearity
+
+ # Multicollinearity tells us about the relationship between independent variables. 
+ # High multicollinearity affects the assumption that there is no perfect correlation between independent variables in the model.
+ # Some of the ways to solve multicollinearity are:
+ - use transformed data,
+ - use the first differential variable,
+ - change the pattern by adding variables,
+ - transform the starting model. 
+ # Determination of multicollinearity is performed through the correlation matrix and through the variance growth factor test. 
+ # There is a rule that the existence of a correlation between variables greater than 0.8 can affect the occurrence of multicollinearity.
+
+USA
+
+USA.corr()
+
+	      log_Bt.USA   log_RP(USA)	log_DI(USA)
+log_Bt.USA    1	           0.006976	0.669405
+log_RP(USA)   0.006976	   1	        0.21457
+log_DI(USA)   0.669405	   0.21457	1
+
+ # From correlation matrix we wee that highest value of correlation is between variables:
+ # "log_Bt.USA " and "log_DI(USA)". This variables are number of tourist and disposable income.
+ # The value of correlation is 0.67
+
+USA['Intercept'] = 1
+vif = pd.DataFrame()
+vif["variables"] = USA.columns
+vif["VIF"] = [variance_inflation_factor(USA.values, i) for i in range(USA.shape[1])]
+print(vif)
+ # To calculate VIF me must include intercept in VIF calcuation.
+ variables	VIF
+ log_Bt.USA	1.879 
+ log_RP(USA)     1.087 
+ log_DI(USA)	1.969 
+ Intercept	13,880.087 
+ # Since we have no VIF higher that 10, we dont have problem with multicollinearity.
+
+Germany
+
+GER.corr()
+
+	     log_Bt.GER	  log_RP(GER)  log_DI(GER)
+log_Bt.GER   1	          -0.650068    0.575 
+log_RP(GER)  -0.650068	  1	       -0.748 
+log_DI(GER)  0.575222     -0.748499    1.000 
+
+ # From correlation matrix we wee that highest value of correlation is between variables:
+ # "log_DI(GER) " and "log_RP(GER)". This variables are disposable income and relative prices.
+ # The value of correlation is -0.75.
+
+GER['Intercept'] = 1
+vif = pd.DataFrame()
+vif["variables"] = GER.columns
+vif["VIF"] = [variance_inflation_factor(GER.values, i) for i in range(GER.shape[1])]
+print(vif)
+
+ variables	VIF
+ log_Bt.GER	1.787178
+ log_RP(GER)	2.71936
+ log_DI(GER)	2.346649
+ Intercept	30150.62024
+ # Since we have no VIF higher that 10, we dont have problem with multicollinearity.
+
+China
+
+CHN.corr()
+
+	     log_Br.CHN	 log_RP(CHN)  log_DI(CHN)
+log_Br.CHN   1	         0.482936     0.888 
+log_RP(CHN)  0.482936	 1	      0.681 
+log_DI(CHN)  0.88778	 0.680785     1.000 
+
+ # From correlation matrix we wee that highest value of correlation is between variables:
+ # "log_Br.CHN " and "log_DI(CHN)". This variables are number of tourist and disposable income.
+ # The value of correlation is 0.88
+
+CHN['Intercept'] = 1
+vif = pd.DataFrame()
+vif["variables"] = CHN.columns
+vif["VIF"] = [variance_inflation_factor(CHN.values, i) for i in range(CHN.shape[1])]
+print(vif)
+
+ variables	VIF
+ log_Br.CHN	5.424343
+ log_RP(CHN)	2.141768
+ log_DI(CHN)	7.752081
+ Intercept	11172.50139
+
+ # Since we have no VIF higher that 10, we dont have problem with multicollinearity.
+
+5. Suggestion of  a valid model
+
+ # Based on the theoretical aspect of the work so far and the tests performed to formulate the model and evaluate the parameters, 
+ # we suggest the final appearance of the econometric model of tourism demand in BiH.
+
+
+          const.     log_RP    log_DI
+Country    ß0	      ß1	ß2	 R2     F stat
+USA       -33.6593*  -1.6979   4.3826*   0.468  0.000
+           (0.000)    (0.187)   (0.000)			
+
+Germany   8.833      -15.3065*  1.6345   0.44   0.000
+           (0.388)    (0.000)    (0.218) 
+
+China   -52.0105*    -3.998*    6.5191*  0.816  0.000
+         (0.000)      (0.000)    (0.000) 
+
+*, statistically significant at the level of 1%
+(.), p-value
+
+const. = it is the value of constant (intercept) of a model
+log_RP = it is the variable relative prices
+log_DI = it is the variable disposabe 
+
+The mathematical appearance of the model takes the form:
+
+a) US 
+log number of tourists = -33.66 + 4.38 log income -1.69 logrelative prices
+
+b) 
+Germany log number of tourists = 8.83 + 1.63 log income -15.30 logrelative prices
+
+c) 
+China log number of tourists = -52.01 + 6.52 log income -3.99 logrelative prices
+
+6. References
+
+Babić-Hodović, V., Domazet, A., & Kurtović, E. (2012). Basics of marketing (fourth). Sarajevo: Faculty of Economics in Sarajevo.
+Botti, L., Peypoch, N., Randriamboarison, R., & Solonandrasana, B. (2006). An Econometric Model of Tourism Demand in France. Anatolia, 19 (1), 41–50. https://doi.org/10.1080/13032917.2008.9687052
+Brockwell, P. J., & Davis, R. A. (2002). Introduction to Time Series and Forecasting. Journal of the American Statistical Association (Second). https://doi.org/10.2307/2965440
+David E. Allen, G. Y. (2011). Modeling Domestic Tourism Demand in Australia A Dynamic Panel Data Approach. Economic Journal of Emerging Markets, 1 (1), 1–11.
+Dritsakis, N., & Athanasiadis, S. (2014). AN ECONOMETRIC MODEL OF TOURIST DEMAND: The Case of Greece, (November 2014), 11. https://doi.org/10.1300/J150v07n02
+Dritsakis, N., & Athanasiadis, S. (2000). An Econometric Model of Tourist Demand. Journal of Hospitality & Leisure Marketing, 7 (2), 39–49. https://doi.org/10.1300/J150v07n02_03
+Diaz, M. R., & Espino-Rodríguez, T. F. (2016). Determining the sustainability factors and performance of a tourism destination from the stakeholders ’perspective. Sustainability (Switzerland), 8 (9). https://doi.org/10.3390/su8090951
+Dževad, Š., & Rahimić, Z. (2009). Management (Second). Sarajevo: Faculty of Economics in Sarajevo.
+Garcia, T. (2003). INTRODUCTORY STATISTICS. Computer. https://doi.org/10.1016/B978-0-08-099936-4.00036-X
+Gržinić, J. (2019). INTRODUCTION TO TOURISM history, development, perspectives (1st ed.). Pula: Juraj Dobrila University of Pula.
+Habibi, F., & Abbasinejad, H. (2011). Dynamic panel data analysis of European tourism demand in Malaysia. Iranian Economic Review, 15 (29), 15.
+Hanacek, J. (2010). "Phases of research process". Retrieved from http://www.academia.edu/download/34312110/4Phases_of_research_process_-_Hanacek.doc
+Ivanov, V., & Kilian, L. (2005). A practitioner’s guide to lag order selection for VAR impulse response analysis. Studies in Nonlinear Dynamics and Econometrics, 9 (1), 36. https://doi.org/10.2202/1558-3708.1219
+King, B., & Ringer, G. (2009). The Advanced Econometrics of Tourism Demand Routledge Advances in Tourism. https://doi.org/10.4324/9780203891469
+Liew, V. K. (2004). On Autoregressive Order Selection Criteria. Computational Economics, (March), 1–14. Retrieved from http://129.3.20.41/eps/comp/papers/0404/0404001.pdf
+Lukic, R. (2012). The effects of cross-border tourist purchases on retail performance. Singidunum Journal of Applied Sciences (Vol. 9). https://doi.org/10.5937/sjas1202021l
+Njegovan, Z. (2016). Economics of tourism and rural tourism. (Full Professor Dr. Nedeljko Tica, Ed.) (1st ed.). Novi Sad: University of Novi Sad, Faculty of Agriculture, Novi Sad.
+Page, S. J. (2009). Tourism Management (Third edit). Elsevier Ltd.
+Resić, E. (2006). Collection of tasks from Statistics.
+Resić, P. dr. E. (2017). Nonparametric statistical tests.
+Silva, J. da. (2016). Tourism Management, 11–73.
+Somun-Kapetanović, R. (2012). Statistics in Economics and Management (Third). Sarajevo: Faculty of Economics in Sarajevo.
+Song, H., Witt F., S., & Li, G. (2009). The Advanced Econometrics of Tourism Demand. Routledge 270 Madison Ave, New York, NY 10016.
+Šošić, I. (2004). Applied statistics.
+Tong, L., Ying, C., & Qian, W. (2018). ADVANCED ECONOMETRICS. Advances in Intelligent Systems and Computing (Vol. 691). https://doi.org/10.1007/978-3-319-70990-1_14
+UN World Tourism Organization. (2018). 2018 Edition UNWTO Tourism Highlights. https://doi.org/DOI: https://doi.org/10.18111/9789284419876
+Wang, L., Zhang, H., & Li, W. (2012). Analysis of causality between tourism and economic growth based on computational econometrics. Journal of Computers, 7 (9), 2152–2159. https://doi.org/10.4304/jcp.7.9.2152-2159
+Vesna Babić-Hodović, Anto Domazet, E. K. (2006). Basics of marketing. Faculty of Economics in Sarajevo.
+Wei, W. W. S. (2012). Time Series Anylysis Univariate and multivariate methods. (D. Lynch, Ed.), Bayesian Econometric Methods (Second). Greg Tobin. https://doi.org/10.1017/cbo9780511802447.020
+Williams, R. (2015). Heteroskedasticity.
+Wooldridge, J. M. (2013). Introductory Econometrics: A Modern Approach, Fifth Edition. (Joe Sabatino, Ed.).
+Yap, G. C. L. (2010). AN ECONOMETRIC ANALYSIS OF AUSTRALIAN DOMESTIC TOURISM DEMAND.
+
+Web:
+ http://www.worldbank.org
+https://tradingeconomics.com/
+https://www.statista.com/
+https://www.indexmundi.com
+https://www.ceicdata.com/en
+https://www.bls.gov
+https://www.oecd.org
+https://www.destatis.de/EN/Homepage.html
+http://www.stats.gov.cn/english/
+http://www.bhas.ba
+https://www.statisticssolutions.com/normality/
 
 
 
