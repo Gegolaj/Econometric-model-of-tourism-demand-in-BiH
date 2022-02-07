@@ -95,7 +95,7 @@ plt.title('Number of tourist by quartal data USA')
 plt.xlabel('Bt.USA')
 plt.ylabel('Period')
 plt.show()
- # Code to make line chart to represent data USA # fali slika
+ # Code to make line chart to represent data USA 
 
 figure(figsize=(8, 6), dpi=100)
 plt.plot(GER["Period"],GER["Bt.GER"],marker='o')
@@ -103,7 +103,7 @@ plt.title('NUmber of tourist by quartal data GER')
 plt.xlabel('Bt.GER')
 plt.ylabel('Period')
 plt.show()
- # Code to make line chart to represent data Germany # fali slika
+ # Code to make line chart to represent data Germany 
 
 figure(figsize=(8, 6), dpi=100)
 plt.plot(CHN["Period"],CHN["Br.CHN"],marker='o')
@@ -111,7 +111,7 @@ plt.title('Number of tourist by quartal data CHN')
 plt.xlabel('Bt.CHN')
 plt.ylabel('Period')
 plt.show()
- # Code to make line chart to represent data China # fali slika
+ # Code to make line chart to represent data China 
 
 3. Descriptive statistics
  3.1.Descriptive statistics of variables of interest
